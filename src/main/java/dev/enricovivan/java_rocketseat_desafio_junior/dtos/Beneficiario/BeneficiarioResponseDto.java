@@ -1,55 +1,30 @@
-package dev.enricovivan.java_rocketseat_desafio_junior.models;
+package dev.enricovivan.java_rocketseat_desafio_junior.dtos.Beneficiario;
 
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import dev.enricovivan.java_rocketseat_desafio_junior.models.Documento;
 
-@Entity
-@Table(name = "Beneficiarios")
-public class Beneficiario {
+public class BeneficiarioResponseDto {
     
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-
-    @Column(nullable = false)
     private String nome;
-
-    @Column(nullable = false)
     private String telefone;
-
-    @Column(nullable = false)
     private Date dataNascimento;
-
-    @Column(nullable = false)
     private Date dataInclusao;
-
     private Date dataAtualizacao;
-
-    // relacionamentos
-    @OneToMany(mappedBy = "Beneficiario", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Documento> documentos;
-
-    public Beneficiario() {
-
-    }
-
-    public Beneficiario(String nome, String telefone, Date dataNascimento, Date dataInclusao, Date dataAtualizacao) {
+    
+    public BeneficiarioResponseDto(UUID id, String nome, String telefone, Date dataNascimento, Date dataInclusao,
+            Date dataAtualizacao, List<Documento> documentos) {
+        this.id = id;
         this.nome = nome;
         this.telefone = telefone;
         this.dataNascimento = dataNascimento;
         this.dataInclusao = dataInclusao;
         this.dataAtualizacao = dataAtualizacao;
-        
+        this.documentos = documentos;
     }
 
     public UUID getId() {
@@ -107,8 +82,6 @@ public class Beneficiario {
     public void setDocumentos(List<Documento> documentos) {
         this.documentos = documentos;
     }
-
-    
 
     
 
