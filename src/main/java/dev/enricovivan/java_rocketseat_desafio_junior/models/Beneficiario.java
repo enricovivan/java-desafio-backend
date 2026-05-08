@@ -1,5 +1,6 @@
 package dev.enricovivan.java_rocketseat_desafio_junior.models;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -36,8 +37,8 @@ public class Beneficiario {
     private Date dataAtualizacao;
 
     // relacionamentos
-    @OneToMany(mappedBy = "Beneficiario", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Documento> documentos;
+    @OneToMany(mappedBy = "beneficiario", cascade = CascadeType.ALL, orphanRemoval = true) // mappedBy é o nome da variavel no model filho
+    private List<Documento> documentos = new ArrayList<>();
 
     public Beneficiario() {
 

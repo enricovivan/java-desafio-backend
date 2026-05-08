@@ -37,7 +37,7 @@ public class Documento {
 
     // relacionamentos
     @ManyToOne(targetEntity = Beneficiario.class, fetch = FetchType.LAZY)
-    @JoinColumn(name = "beneficiario_id", nullable = false)
+    @JoinColumn(name = "beneficiario_id", nullable = false) // o nome da coluna que terá no db
     private Beneficiario beneficiario;
 
     public Documento() {
