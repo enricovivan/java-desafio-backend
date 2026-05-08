@@ -2,10 +2,10 @@ package dev.enricovivan.java_rocketseat_desafio_junior.services;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import dev.enricovivan.java_rocketseat_desafio_junior.models.Beneficiario;
 import dev.enricovivan.java_rocketseat_desafio_junior.models.Documento;
@@ -14,6 +14,7 @@ import dev.enricovivan.java_rocketseat_desafio_junior.repositories.DocumentoRepo
 import jakarta.persistence.EntityNotFoundException;
 
 @Service
+@Transactional
 public class BeneficiarioService {
     
     private final BeneficiarioRepository beneficiarioRepository;
@@ -35,48 +36,43 @@ public class BeneficiarioService {
     }
 
     // lista os documetos do beneficiario
-    public List<Documento> getDocumentosDoBeneficiario(UUID uuid) {
+    @Transactional(readOnly=true)
+    public List<Documento> getDocumentosDoBeneficiario(UUID uuidBeneficiario) {
 
-        // verifica se existe beneficiario
-        Optional<Beneficiario> beneficiario = beneficiarioRepository.findById(uuid);
-
-        if (beneficiario.isEmpty()) {
-            throw new EntityNotFoundException("Beneficiario nao encontrado");
+        // verifica se o beneficiário existe
+        if (beneficiarioRepository.existsById(uuidBeneficiario)) {
+            throw new EntityNotFoundException("Beneficiário não encontrado");
         }
 
-        List<Documento> documentos = documentoRepository.findByBeneficiarioId(uuid);
-        return documentos;
+        return documentoRepository.findByBeneficiarioId(uuidBeneficiario);
     }
 
-    // atualizar dados do beneficiario
-    public Beneficiario updateBeneficiario(UUID uuid, Beneficiario beneficiario){
-        
-        // verifica se existe beneficiario
-        Optional<Beneficiario> beneficiarioDb = beneficiarioRepository.findById(uuid);
+    // atualiza beneficiario
+    public Beneficiario updateBeneficiario(UUID uuiBeneficiario, Beneficiario req){
+        return beneficiarioRepository.findById(uuiBeneficiario)
+            .map(beneficiario -> {
+                beneficiario.setNome(req.getNome());
+                beneficiario.setDataNascimento(req.getDataNascimento());
+                beneficiario.setDataAtualizacao(new Date());
 
-        if (beneficiarioDb.isEmpty()) {
-            throw new EntityNotFoundException("Beneficiario nao encontrado");
-        }
-
-        beneficiarioDb.get().setNome(beneficiario.getNome());
-        beneficiarioDb.get().setDataNascimento(beneficiario.getDataNascimento());
-        beneficiarioDb.get().setDataAtualizacao(new Date());
-
-        return beneficiarioRepository.save(beneficiarioDb.get());
+                return beneficiarioRepository.save(beneficiario);
+            })
+            .orElseThrow(() -> new EntityNotFoundException("Beneficiário não encontrado"));
     }
 
     // remove um baneficiario
     public Beneficiario deleteBeneficiario(UUID uuid){
         
-        // verifica se existe beneficiario
-        Optional<Beneficiario> beneficiarioDb = beneficiarioRepository.findById(uuid);
+        // como delete by id retorna void, e  precisamos retornar o beneficiario nessa função
+        // entçao temos que armazenar o beneficiario seele for encontrado
+        Beneficiario beneficiario = beneficiarioRepository.findById(uuid)
+            .orElseThrow(() -> new EntityNotFoundException("Beneficiário não encontrado"));
 
-        if (beneficiarioDb.isEmpty()) {
-            throw new EntityNotFoundException("Beneficiario nao encontrado");
-        }
+        // remove 
+        beneficiarioRepository.delete(beneficiario);
+
+        return beneficiario;
         
-        beneficiarioRepository.delete(beneficiarioDb.get());
-        return beneficiarioDb.get();
     }
 
 
